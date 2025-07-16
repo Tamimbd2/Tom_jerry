@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tom & Jerry Chase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Apply Inter font and dark theme */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #111111; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars, as cursor elements are fixed */
+            cursor: none; /* Hide default mouse cursor */
+            height: 100vh; /* Full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Base styles for custom cursor elements */
+        .cursor-element {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none; /* Allow clicks to pass through */
+            border-radius: 50%; /* Rounded corners for the container */
+            overflow: hidden; /* Hide parts of image outside the rounded container */
+            display: flex; /* Use flexbox for centering image */
+            justify-content: center;
+            align-items: center;
+            transform: translate(-50%, -50%); /* Center the element on its calculated position */
+        }
+
+        .cursor-element img {
+            width: 100%; /* Make image fill its container */
+            height: 100%;
+            object-fit: contain; /* Ensure the entire image is visible, maintaining aspect ratio */
+            border-radius: 50%; /* Apply rounded corners to the image itself */
+        }
+
+        /* Styles for the custom Jerry (mouse) cursor */
+        #jerry-cursor {
+            width: 40px; /* Size of Jerry icon */
+            height: 40px;
+            z-index: 9999; /* Ensure it's on top */
+        }
+
+        /* Styles for the chasing Tom (cat) element */
+        #tom-chaser {
+            width: 80px; /* Size of Tom icon (larger than Jerry) */
+            height: 80px;
+            z-index: 9998; /* Tom should be behind Jerry but still on top of content */
+            transition: transform 0.1s ease-out; /* Smooth transition for Tom's movement */
+        }
+
+        /* Responsive adjustments for cursor elements */
+        @media (max-width: 768px) {
+            #jerry-cursor {
+                width: 30px;
+                height: 30px;
+            }
+            #tom-chaser {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Jerry (mouse) cursor element -->
+    <div id="jerry-cursor" class="cursor-element">
+        <!-- PNG for Jerry (mouse icon) -->
+        <img src="https://i.ibb.co/wNLsDpGr/pngaaa-com-1663951.png" alt="Jerry Cursor">
+    </div>
+
+    <!-- Chasing Tom (cat) element -->
+    <div id="tom-chaser" class="cursor-element">
+        <!-- PNG for Tom (cat icon) -->
+        <img src="https://i.ibb.co/h1BmvZXJ/pngaaa-com-1663879-removebg-preview.png" alt="Tom Chaser">
+    </div>
+
+    <script>
+        // Get references to the custom cursor elements
+        const jerryCursor = document.getElementById('jerry-cursor');
+        const tomChaser = document.getElementById('tom-chaser');
+
+        // Variables to store the target position for Tom (where Jerry is)
+        let targetX = 0;
+        let targetY = 0;
+
+        // Variables to store Tom's current position
+        let currentTomX = 0;
+        let currentTomY = 0;
+
+        // Easing factor for smooth movement (0.1 means Tom moves 10% towards Jerry each frame)
+        const easingFactor = 0.1;
+
+        // Function to update the positions of Jerry and Tom
+        function animateTomAndJerry() {
+            // Update Jerry's position directly to follow the mouse
+            jerryCursor.style.transform = `translate(${targetX}px, ${targetY}px) translate(-50%, -50%)`;
+
+            // Calculate the difference between Tom's current position and Jerry's target position
+            const dx = targetX - currentTomX;
+            const dy = targetY - currentTomY;
+
+            // Move Tom towards Jerry by the easing factor
+            currentTomX += dx * easingFactor;
+            currentTomY += dy * easingFactor;
+
+            // Apply Tom's new position
+            tomChaser.style.transform = `translate(${currentTomX}px, ${currentTomY}px) translate(-50%, -50%)`;
+
+            // Request the next animation frame
+            requestAnimationFrame(animateTomAndJerry);
+        }
+
+        // Event listener for mouse movement
+        document.addEventListener('mousemove', (e) => {
+            // Update the target position for Jerry and Tom
+            targetX = e.clientX;
+            targetY = e.clientY;
+        });
+
+        // Initialize Tom's position to the center of the screen initially
+        currentTomX = window.innerWidth / 2;
+        currentTomY = window.innerHeight / 2;
+
+        // Start the animation loop
+        animateTomAndJerry();
+    </script>
+</body>
+</html>
